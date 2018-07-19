@@ -1,4 +1,5 @@
 from pysword.bible import SwordBible
+import pickle
 
 bible = SwordBible('/usr/share/sword/modules/texts/ztext/kjv/',
                    'ztext', 'kjv', 'utf8', 'OSIS')
@@ -18,6 +19,8 @@ class Reading:
         self.verses = verses
         self.length = length
     def __str__(self):
+        return '{} {}'.format(self.book, self.verses)
+    def __repr__(self):
         return '{} {}'.format(self.book, self.verses)
 
 class Block:
@@ -83,3 +86,6 @@ print('OT:', OT_total)
 print('Psalms:', Psalms_total)
 
 print(blocks)
+
+with open("readings", "wb") as f:
+    pickle.dump(blocks, f)
