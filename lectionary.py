@@ -18,7 +18,10 @@ class Reading:
         self.verseN = verseN
         self.length = passage_length(book, chap1, verse1, chapN, verseN)
     def __str__(self):
-        return '{} ({})'.format(self.name, self.length)
+        return '{} ({})'.format(scriptures.reference_to_string(self.book,
+                                                               self.chap1, self.verse1,
+                                                               self.chapN, self.verseN),
+                                self.length)
     def __repr__(self):
         return self.name
     @property
