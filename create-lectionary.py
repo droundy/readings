@@ -13,6 +13,8 @@ for x in nt[4:]:
     blocks.add(b)
     print(b, len(b.readings), b.length)
     NT_total += b.length
+    for r in b.readings:
+        print('   ', r)
 
 gospels_total = 0
 for x in nt[:4]:
@@ -21,6 +23,8 @@ for x in nt[:4]:
     blocks.add(b)
     print(b, len(b.readings), b.length)
     gospels_total += b.length
+    for r in b.readings:
+        print('   ', r)
 
 OT_total = 0
 Psalms_total = 0
@@ -39,6 +43,8 @@ for x in ot:
     else:
         blocks.add(b)
         print(b, len(b.readings), b.length)
+        for r in b.readings:
+            print('   ', r)
         OT_total += b.length
 
 print('gospels:', gospels_total)
