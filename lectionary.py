@@ -21,6 +21,7 @@ class Reading:
         self.verseN = verseN
         self.topics = topics
         self.kids = kids
+        self.category = ''
     def __str__(self):
         return '{} ({})'.format(self.name, self.length)
     def __repr__(self):
@@ -90,24 +91,28 @@ class Reading:
 
 class Block:
     """A block of readings that should be scheduled consecutively"""
-    def __init__(self, name, readings):
+    def __init__(self, name, readings, cat):
         if name == 'Revelation of John':
             name = 'Revelation'
         self.name = name
         self.readings = readings
-        self.category = ''
+        for r in readings:
+            r.category = cat
+        self.category = cat
         self.length = sum([r.length for r in readings])
+        self.times_read = 0
+        self.where_am_i = None
     def __str__(self):
         return '{}'.format(self.name)
     def __repr__(self):
         return '{}'.format(self.name)
 
-def book_block(b):
+def book_block(b, cat):
     readings = []
     cl = b.chapter_lengths
     for c in range(b.num_chapters):
         readings.append(Reading(b.name, c+1, 1, c+1, cl[c]))
-    return Block(b.name, readings)
+    return Block(b.name, readings, cat)
 
 def passage_length(book, chap1, verse1, chapN, verseN):
     totlen = -1
