@@ -25,6 +25,8 @@ class Reading:
         return '{} ({})'.format(self.name, self.length)
     def __repr__(self):
         return self.name
+    def __hash__(self):
+        return hash(self.name)
     @property
     def name(self):
         tags = ''
@@ -46,21 +48,23 @@ class Reading:
         return (self.chapN < r.chap1
                 or (self.chapN == r.chap1 and self.verseN < r.verse1))
     def __le__(self, r):
-        return not self > r
+        return (self.chap1 < r.chap1
+                or (self.chap1 == r.chap1 and self.verse1 <= r.verse1))
     def __gt__(self, r):
         return (self.chap1 > r.chapN
                 or (self.chap1 == r.chapN and self.verse1 > r.verseN))
     def __ge__(self, r):
-        return not self < r
+        return (self.chapN > r.chapN
+                or (self.chapN == r.chapN and self.verseN >= r.verseN))
     def overlaps(self, r):
-        return self.book == r.book and (self == r or (self >= r and self <= r))
+        return self.book == r.book and (not self < r) and (not self > r)
     def __sub__(self, r):
         if not self.overlaps(r):
             return [self]
         if r == self:
             return []
         chunks = []
-        if self <= r:
+        if self <= r and (self.chap1 < r.chap1 or self.verse1 < r.verse1):
             if r.verse1==1:
                 b,c1,v1,cN,vN = scriptures.normalize_reference(self.book,
                                                                self.chap1, self.verse1,
@@ -70,7 +74,8 @@ class Reading:
                                                                self.chap1, self.verse1,
                                                                r.chap1, r.verse1-1)
             chunks.append(Reading(b, c1, v1, cN, vN))
-        if self >= r:
+        if self >= r and (self.chapN > r.chapN or self.verseN > r.verseN):
+            print('hello', self, r)
             try:
                 b,c1,v1,cN,vN = scriptures.normalize_reference(self.book,
                                                                r.chapN, r.verseN+1,
