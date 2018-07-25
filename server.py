@@ -47,13 +47,10 @@ def edit():
 @app.route("/edit", methods=['POST'])
 def submit_edit():
     form = flask.request.form
-    print('form are', form)
     feedback=None
     changes=None
     if 'passage' in form and len(form['passage']) > 0:
         try:
-            print('passags is', form['passage'])
-            print('topics are', form['topics'].split())
             feedback, passages_changed = lectionary.modify_readings(form['passage'],
                                                                     form['topics'].split(),
                                                                     'kids' in form)

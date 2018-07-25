@@ -219,7 +219,6 @@ def modify_readings(passages, topics, kids):
     feedback = ''
     passages_changed = []
     passages = scriptures.extract(passages)
-    print('resolved passage', passages)
     for (book, chapter1, verse1, chapterN, verseN) in passages:
         r = Reading(book, chapter1, verse1, chapterN, verseN)
         r.kids = kids
@@ -248,7 +247,6 @@ def modify_readings(passages, topics, kids):
                     else:
                         feedback += '  {} {}\n'.format(rr.name, ', '.join(rr.topics))
 
-    print('about to dump')
     with open("readings", "wb") as f:
         pickle.dump(blocks, f)
     return feedback, passages_changed
