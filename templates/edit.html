@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit readings</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="/">Today's reading</a></li>
+      <li><a href="edit">Edit readings</a></li>
+    </ul>
+  </nav>
+  <main>
+    <h1>Edit readings</h1>
+    {% if changes %}
+    <details>
+      <summary>{{changes}}</summary>
+      {{feedback|safe}}
+    </details>
+    {% endif %}
+    <form action="/edit" method="post">
+      Passage: <br/>
+      <input type="text" name="passage" value="">
+      <br/>
+      <input type="checkbox" name="kids">Kid-friendly
+      <br/>
+      Topics:<br/>
+      <input type="text" name="topics" value="">
+      <br/>
+      <input type="submit" value="Submit">
+    </form> 
+  </main>
+</body>
+</html>

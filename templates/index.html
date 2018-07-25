@@ -1,10 +1,27 @@
-<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Readings for {{date}}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="/">Today's reading</a></li>
+      <li><a href="edit">Edit readings</a></li>
+    </ul>
+  </nav>
+  <main>
+    <h1>Readings for {{date}}</h1>
 
-<title>Hello from Flask</title>
+    {% if yesterday%}<a class="previous" href="day-{{yesterday}}">Previous</a>{% endif %}
+    <a class="next" href="day-{{tomorrow}}">Next</a>
+    <article>
+      <a href="{{link}}">{{passage|safe}}</a>
+    </article>
 
-<h1>Hello, World!</h1>
-
-<a href="{{link}}">{{passage}}</a>
-
-{% if yesterday%}<a href="day-{{yesterday}}">Previous</a>{% endif %}
-<a href="day-{{tomorrow}}">Next</a>
+  </main>
+</body>
+</html>

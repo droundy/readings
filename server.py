@@ -1,4 +1,4 @@
-import pickle, lectionary, flask, datetime
+import pickle, lectionary, flask, datetime, glob, sys
 
 app = flask.Flask(__name__)
 
@@ -24,19 +24,48 @@ def day(daynum):
     yesterday = daynum-1
     if yesterday < 0:
         yesterday = None
+    date = (schedule[0] + datetime.timedelta(daynum)).strftime("%A %B %e, %Y")
     niv_link = 'https://www.biblestudytools.com/passage/?q='
     niv_link += ';'.join([r.linkname for r in today])
     # The following is the oremus bible version: no adds!
     link = 'http://bible.oremus.org/?version=NRSV&vnum=NO&passages='
     link += '%0D%0A'.join([r.linkname for r in today])
-    passage = '; '.join([r.name for r in today])
+    passage = '<br/>'.join(sorted([r.name for r in today]))
 
     return flask.render_template('index.html',
+                                 date=date,
                                  link=link,
                                  niv_link=niv_link,
                                  today=today,
                                  passage=passage,
                                  yesterday=yesterday, tomorrow=tomorrow)
 
+@app.route("/edit", methods=['GET'])
+def edit():
+    return flask.render_template('edit.html')
+
+@app.route("/edit", methods=['POST'])
+def submit_edit():
+    form = flask.request.form
+    print('form are', form)
+    feedback=None
+    changes=None
+    if 'passage' in form and len(form['passage']) > 0:
+        try:
+            print('passags is', form['passage'])
+            print('topics are', form['topics'].split())
+            feedback, passages_changed = lectionary.modify_readings(form['passage'],
+                                                                    form['topics'].split(),
+                                                                    'kids' in form)
+            changes = 'Modified ' + ', '.join(sorted([r.name for r in passages_changed]))
+            feedback = feedback.replace('\n', '<br/>')
+        except:
+            feedback = 'error modifying readings: {}'.format(sys.exc_info())
+            changes = 'Error modifying readings'
+
+    return flask.render_template('edit.html',
+                                 changes=changes,
+                                 feedback=feedback)
+
 if __name__ == "__main__":
-    app.run()
+    app.run(extra_files=glob.glob('templates/*.html'))

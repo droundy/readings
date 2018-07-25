@@ -121,6 +121,9 @@ def book_block(b, cat):
         readings.append(Reading(b.name, c+1, 1, c+1, cl[c]))
     return Block(b.name, readings, cat)
 
+with open("readings", "rb") as f:
+    blocks = pickle.load(f)
+
 def passage_length(book, chap1, verse1, chapN, verseN):
     totlen = -1
     c = chap1
@@ -211,3 +214,41 @@ def coalesce_readings(rs):
         else:
             i=i+1
     return rs
+
+def modify_readings(passages, topics, kids):
+    feedback = ''
+    passages_changed = []
+    passages = scriptures.extract(passages)
+    print('resolved passage', passages)
+    for (book, chapter1, verse1, chapterN, verseN) in passages:
+        r = Reading(book, chapter1, verse1, chapterN, verseN)
+        r.kids = kids
+        for t in topics:
+            r.topics.add(t)
+        for b in blocks:
+            new_readings = set()
+            old_readings = set()
+            for rr in b.readings:
+                if rr.book != r.book:
+                    break
+                if rr.overlaps(r):
+                    old_readings.add(rr)
+                    for rrr in rr-r:
+                        new_readings.add(rrr)
+                    new_readings.add(r)
+            if len(new_readings) > 0:
+                passages_changed.append(r)
+                for rr in old_readings:
+                    b.readings.remove(rr)
+                b.readings.extend(new_readings)
+                b.readings.sort()
+                for rr in sorted(new_readings):
+                    if rr == r:
+                        feedback += '  {} {}\n'.format(rr.name, ', '.join(rr.topics))
+                    else:
+                        feedback += '  {} {}\n'.format(rr.name, ', '.join(rr.topics))
+
+    print('about to dump')
+    with open("readings", "wb") as f:
+        pickle.dump(blocks, f)
+    return feedback, passages_changed

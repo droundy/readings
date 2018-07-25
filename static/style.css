@@ -1,0 +1,62 @@
+html {
+    --menu-color: #999;
+    --nav-color: #999;
+    font-size: 1.5em;
+}
+
+nav ul {
+    margin: -1em -2em 0 -2em;
+    padding: 3em 2em 2em -.25em;
+    padding-top: 1em;
+    list-style-type:none;
+    display:block;
+    font-weight:bold;
+    line-height:165%;
+    width:100%;
+    background-color: var(--menu-color);
+}
+nav ul:after {
+    content: ".";
+    color: transparent;
+    clear: left;
+}
+nav ul li{
+    font-size: 0.5em
+    position: relative;
+    float: left;
+    margin:0;
+    padding-left:0.5em;
+    padding-right:0.5em;
+}
+
+a, a:link, a:active {
+    text-decoration: none;
+    color: black;
+    text-align: center;
+}
+
+h1 {
+    font-size: 1em;
+    text-align: center;
+}
+
+article {
+    text-align: left;
+    margin-left: 25%;
+    margin-right: 25%;
+    width: 50%;
+}
+
+.previous {
+    float: left;
+    color: var(--nav-color);
+}
+
+.next, .next:active, .next:link {
+    float: right;
+    color: var(--nav-color);
+}
+
+details {
+    color: red;
+}
