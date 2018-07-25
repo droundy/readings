@@ -1,4 +1,4 @@
-import pickle, lectionary
+import pickle, lectionary, datetime
 
 nt = lectionary.books['nt']
 
@@ -55,7 +55,9 @@ print('Psalms daily goal', Psalms_total/365.0)
 
 print(blocks)
 
+today = datetime.date.today()
+
 with open("readings", "wb") as f:
     pickle.dump(blocks, f)
 with open("schedule", "wb") as f:
-    pickle.dump([], f)
+    pickle.dump((today, []), f)

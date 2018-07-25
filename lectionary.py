@@ -41,6 +41,13 @@ class Reading:
                                                     self.chapN, self.verseN) + tags
         n = n.replace(' of Jesus Christ','')
         return n
+    @property
+    def linkname(self):
+        n = scriptures.reference_to_string(self.book,
+                                           self.chap1, self.verse1,
+                                           self.chapN, self.verseN)
+        n = n.replace(' of Jesus Christ','')
+        return n
     def __eq__(self, r):
         return (self.book == r.book
                 and self.chap1 == r.chap1 and self.chapN == r.chapN
