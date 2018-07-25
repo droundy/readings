@@ -5,3 +5,6 @@
 <h1>Hello, World!</h1>
 
 <a href="{{link}}">{{passage}}</a>
+
+{% if yesterday%}<a href="day-{{yesterday}}">Previous</a>{% endif %}
+<a href="day-{{tomorrow}}">Next</a>
