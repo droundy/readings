@@ -17,11 +17,13 @@ for x in nt[4:]:
 
 gospels_total = 0
 for x in nt[:4]:
-    b = lectionary.book_block(x, 'gospel')
+    b = lectionary.book_block(x, 'NT')
     blocks.add(b)
     print(b, len(b.readings), b.length)
     gospels_total += b.length
     for r in b.readings:
+        r.topics.add('gospel')
+        r.kids = True
         print('   ', r)
 
 OT_total = 0
@@ -42,16 +44,6 @@ for x in ot:
         for r in b.readings:
             print('   ', r)
         OT_total += b.length
-
-print('gospels:', gospels_total)
-print('NT:', NT_total)
-print('OT:', OT_total)
-print('Psalms:', Psalms_total)
-
-print('gospel daily goal', gospels_total/365.0)
-print('NT daily goal', NT_total/365.0)
-print('OT daily goal', OT_total/365.0/2)
-print('Psalms daily goal', Psalms_total/365.0)
 
 print(blocks)
 

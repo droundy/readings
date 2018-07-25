@@ -1,5 +1,5 @@
 from pysword.bible import SwordBible
-import pickle, scriptures, random
+import pickle, scriptures, random, datetime, copy
 
 bible = SwordBible('/usr/share/sword/modules/texts/ztext/kjv/',
                    'ztext', 'kjv', 'utf8', 'OSIS')
@@ -19,7 +19,7 @@ class Reading:
         self.verse1 = verse1
         self.chapN = chapN
         self.verseN = verseN
-        self.topics = topics
+        self.topics = copy.copy(topics)
         self.kids = kids
         self.category = ''
     def __str__(self):
@@ -142,8 +142,8 @@ def passage_length(book, chap1, verse1, chapN, verseN):
 def schedule_day(blocks, schedule):
     current_blocks = [b for b in blocks if b.where_am_i is not None]
 
-    categories = ['gospel', 'NT', 'OT', 'Psalms']
-    years = [0.8,1,2,1.5]
+    categories = ['NT', 'OT', 'Psalms']
+    years = [1,2,1.5]
     goals = []
     have_read = []
     priority = []
@@ -241,12 +241,22 @@ def modify_readings(passages, topics, kids):
                     b.readings.remove(rr)
                 b.readings.extend(new_readings)
                 b.readings.sort()
-                for rr in sorted(new_readings):
+                for rr in b.readings:
                     if rr == r:
                         feedback += '  {} {}\n'.format(rr.name, ', '.join(rr.topics))
                     else:
                         feedback += '  {} {}\n'.format(rr.name, ', '.join(rr.topics))
 
+    now = datetime.date.today()
+    with open("schedule", "rb") as f:
+        schedule = pickle.load(f)
+    daynum = int((now - schedule[0]).total_seconds()/24/60/60)
+    if len(schedule[1]) > daynum+1:
+        for b in blocks:
+            b.where_am_i = None
+        del schedule[1][daynum+1:]
+        with open("schedule", "wb") as f:
+            pickle.dump(schedule, f)
     with open("readings", "wb") as f:
         pickle.dump(blocks, f)
     return feedback, passages_changed
