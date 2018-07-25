@@ -53,16 +53,16 @@ class Reading:
                 and self.chap1 == r.chap1 and self.chapN == r.chapN
                 and self.verse1 == r.verse1 and self.verseN == r.verseN)
     def __lt__(self, r):
-        return (self.chapN < r.chap1
+        return (self.book < r.book or self.chapN < r.chap1
                 or (self.chapN == r.chap1 and self.verseN < r.verse1))
     def __le__(self, r):
-        return (self.chap1 < r.chap1
+        return (self.book < r.book or self.chap1 < r.chap1
                 or (self.chap1 == r.chap1 and self.verse1 <= r.verse1))
     def __gt__(self, r):
-        return (self.chap1 > r.chapN
+        return (self.book > r.book or self.chap1 > r.chapN
                 or (self.chap1 == r.chapN and self.verse1 > r.verseN))
     def __ge__(self, r):
-        return (self.chapN > r.chapN
+        return (self.book > r.book or self.chapN > r.chapN
                 or (self.chapN == r.chapN and self.verseN >= r.verseN))
     def overlaps(self, r):
         return self.book == r.book and (not self < r) and (not self > r)
@@ -192,3 +192,22 @@ def schedule_day(blocks, schedule):
                             pass
                         break
     schedule[1].append(today)
+
+def coalesce_readings(rs):
+    rs.sort()
+    i=0
+    while i<len(rs)-1:
+        if rs[i].book == rs[i+1].book:
+            joined = Reading(rs[i].book, rs[i].chap1, rs[i].verse1, rs[i+1].chapN, rs[i+1].verseN)
+            if joined.length == rs[i].length + rs[i+1].length+1:
+                joined.topics = rs[i].topics
+                joined.kids = rs[i].kids
+                joined.category = rs[i].category
+                rs[i] = joined
+                del rs[i+1]
+            else:
+                print('difference in length is', joined.length, 'versus', rs[i].length + rs[i+1].length)
+                i=i+1
+        else:
+            i=i+1
+    return rs

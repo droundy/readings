@@ -1,0 +1,4 @@
+apt install sword-text-kjv
+pip3 install pysword
+apt install python3-flask
+pip3 install python-scriptures
