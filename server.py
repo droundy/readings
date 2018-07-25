@@ -16,7 +16,7 @@ def index(name=None):
     today=schedule[1][daynum]
     link = 'https://www.biblestudytools.com/passage/?q='
     link += ';'.join([r.linkname for r in today])
-    passage = ';'.join([r.name for r in today])
+    passage = '; '.join([r.name for r in today])
 
     return flask.render_template('index.html', link=link, today=today, passage=passage)
 
