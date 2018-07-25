@@ -16,7 +16,7 @@
   <main>
     <h1>Readings for {{date}}</h1>
 
-    {% if yesterday%}<a class="previous" href="day-{{yesterday}}">Previous</a>{% endif %}
+    {% if yesterday is not none %}<a class="previous" href="day-{{yesterday}}">Previous</a>{% endif %}
     <a class="next" href="day-{{tomorrow}}">Next</a>
     <article>
       <a href="{{link}}">{{passage|safe}}</a>
