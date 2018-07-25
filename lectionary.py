@@ -53,17 +53,21 @@ class Reading:
                 and self.chap1 == r.chap1 and self.chapN == r.chapN
                 and self.verse1 == r.verse1 and self.verseN == r.verseN)
     def __lt__(self, r):
-        return (self.book < r.book or self.chapN < r.chap1
-                or (self.chapN == r.chap1 and self.verseN < r.verse1))
+        return (self.book < r.book or
+                (self.book == r.book
+                 and (self.chapN < r.chap1 or (self.chapN == r.chap1 and self.verseN < r.verse1))))
     def __le__(self, r):
-        return (self.book < r.book or self.chap1 < r.chap1
-                or (self.chap1 == r.chap1 and self.verse1 <= r.verse1))
+        return (self.book < r.book or
+                (self.book == r.book
+                 and (self.chap1 < r.chap1 or (self.chap1 == r.chap1 and self.verse1 <= r.verse1))))
     def __gt__(self, r):
-        return (self.book > r.book or self.chap1 > r.chapN
-                or (self.chap1 == r.chapN and self.verse1 > r.verseN))
+        return (self.book > r.book or
+                (self.book == r.book
+                 and (self.chap1 > r.chapN or (self.chap1 == r.chapN and self.verse1 > r.verseN))))
     def __ge__(self, r):
-        return (self.book > r.book or self.chapN > r.chapN
-                or (self.chapN == r.chapN and self.verseN >= r.verseN))
+        return (self.book > r.book or
+                (self.book == r.book
+                 and (self.chapN > r.chapN or (self.chapN == r.chapN and self.verseN >= r.verseN))))
     def overlaps(self, r):
         return self.book == r.book and (not self < r) and (not self > r)
     def __sub__(self, r):
