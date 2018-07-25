@@ -34,6 +34,10 @@ def day(daynum):
     date = (schedule[0] + datetime.timedelta(daynum)).strftime("%A %B %e, %Y")
     niv_link = 'https://www.biblestudytools.com/passage/?q='
     niv_link += ';'.join([r.linkname for r in today])
+
+    niv_link = 'https://www.biblegateway.com/passage/?search='
+    niv_link += ';'.join([r.linkname for r in today])
+    niv_link += '&version=NIV'
     # The following is the oremus bible version: no adds!
     link = 'http://bible.oremus.org/?version=NRSV&vnum=NO&passages='
     link += '%0D%0A'.join([r.linkname for r in today])
