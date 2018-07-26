@@ -2,5 +2,5 @@
 
 set -ev
 
-wget https://droundy.pythonanywhere.com/readings
-wget https://droundy.pythonanywhere.com/schedule
+curl https://droundy.pythonanywhere.com/readings > readings
+curl https://droundy.pythonanywhere.com/schedule > schedule
