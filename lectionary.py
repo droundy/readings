@@ -49,6 +49,9 @@ class Reading:
         n = n.replace(' of Jesus Christ','')
         return n
     @property
+    def space_topics(self):
+        return ' '.join(self.topics)
+    @property
     def link(self):
         niv_link = 'https://www.biblegateway.com/passage/?search='
         niv_link += self.linkname+'&version=NIV'
@@ -226,9 +229,17 @@ def coalesce_readings(rs):
             i=i+1
     return rs
 
+class Changes:
+    """Changes made to the readings"""
+    def __init__(self, error=None):
+        self.error = error
+        self.passages = []
+        self.cut = []
+        self.books = []
+
 def modify_readings(passages, topics, kids):
     feedback = ''
-    passages_changed = []
+    changes = Changes()
     passages = scriptures.extract(passages)
     for (book, chapter1, verse1, chapterN, verseN) in passages:
         r = Reading(book, chapter1, verse1, chapterN, verseN)
@@ -245,18 +256,15 @@ def modify_readings(passages, topics, kids):
                     old_readings.add(rr)
                     for rrr in rr-r:
                         new_readings.add(rrr)
+                        changes.cut.append(rrr)
                     new_readings.add(r)
             if len(new_readings) > 0:
-                passages_changed.append(r)
+                changes.passages.append(r)
                 for rr in old_readings:
                     b.readings.remove(rr)
                 b.readings.extend(new_readings)
                 b.readings.sort()
-                for rr in b.readings:
-                    if rr == r:
-                        feedback += '  {} {}\n'.format(rr.name, ', '.join(rr.topics))
-                    else:
-                        feedback += '  {} {}\n'.format(rr.name, ', '.join(rr.topics))
+                changes.books.append(b)
 
     now = datetime.date.today()
     with open("schedule", "rb") as f:
@@ -270,4 +278,4 @@ def modify_readings(passages, topics, kids):
             pickle.dump(schedule, f)
     with open("readings", "wb") as f:
         pickle.dump(blocks, f)
-    return feedback, passages_changed
+    return changes

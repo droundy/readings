@@ -56,6 +56,12 @@ article {
     color: var(--nav-color);
 }
 
-details {
+.changed, .changed:active, .changed:link {
+    color: green;
+}
+.cut, .cut:active, .cut:link {
+    color: red;
+}
+.error {
     color: red;
 }

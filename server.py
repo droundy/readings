@@ -53,7 +53,12 @@ def day(daynum):
 
 @app.route("/edit", methods=['GET'])
 def edit():
-    return flask.render_template('edit.html')
+    args = flask.request.args
+    print('args', args)
+    return flask.render_template('edit.html',
+                                 passage=args.get('passage',default=''),
+                                 kids='kids' in args,
+                                 topics=args.get('topics',default=''))
 
 @app.route("/edit", methods=['POST'])
 def submit_edit():
@@ -62,18 +67,14 @@ def submit_edit():
     changes=None
     if 'passage' in form and len(form['passage']) > 0:
         try:
-            feedback, passages_changed = lectionary.modify_readings(form['passage'],
-                                                                    form['topics'].split(),
-                                                                    'kids' in form)
-            changes = 'Modified ' + ', '.join(sorted([r.name for r in passages_changed]))
-            feedback = feedback.replace('\n', '<br/>')
+            changes = lectionary.modify_readings(form['passage'],
+                                                 form['topics'].split(),
+                                                 'kids' in form)
         except:
-            feedback = 'error modifying readings: {}'.format(sys.exc_info())
-            changes = 'Error modifying readings'
+            changes = Changes('Error modifying readings: {}'.format(sys.exc_info()))
 
     return flask.render_template('edit.html',
-                                 changes=changes,
-                                 feedback=feedback)
+                                 changes=changes)
 
 @app.route("/books", methods=['GET'])
 def books():

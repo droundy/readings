@@ -1,28 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Readings for {{book}}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-  <nav>
-    <ul>
-      <li><a href="/">Today's reading</a></li>
-      <li><a href="/books">Readings by book</a></li>
-      <li><a href="/edit">Edit readings</a></li>
-    </ul>
-  </nav>
-  <main>
-    <h1>Readings for {{book}}</h1>
-
+{% extends "index.html" %}
+{% block title %}Readings for {{book}}{% endblock %}
+{% block content %}
     <ul>
     {% for r in book.readings %}
-    <li><a href="{{r.link}}">{{r.name}}</a> (<a href="/edit?">edit</a>)</li>
+    <li><a href="{{r.link}}">{{r.name}}</a> (<a href="/edit?passage={{r.linkname}}&topics={{r.space_topics}}{% if r.kids %}&kids{% endif %}">edit</a>)</li>
     {% endfor %}
     </ul>
-
-  </main>
-</body>
-</html>
+{% endblock %}

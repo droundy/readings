@@ -1,37 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Edit readings</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-  <nav>
-    <ul>
-      <li><a href="/">Today's reading</a></li>
-      <li><a href="edit">Edit readings</a></li>
-    </ul>
-  </nav>
-  <main>
-    <h1>Edit readings</h1>
-    {% if changes %}
-    <details>
-      <summary>{{changes}}</summary>
-      {{feedback|safe}}
-    </details>
-    {% endif %}
+{% extends "index.html" %}
+{% block title %}Edit readings{% endblock %}
+{% block content %}
+
+{% if changes %}
+{% if changes.error %}<div class="error">{{changes.error}}</div>{% endif %}
+
+{% if changes.passages %}
+{% for b in changes.books %}
+<ul>
+  {% for r in b.readings %}
+  <li><a href="{{r.link}}" class="{% if r in changes.passages %}changed{%elif r in changes.cut%}cut{%else%}same{%endif%}">{{r.name}}</a>
+    (<a href="/edit?passage={{r.linkname}}&topics={{r.space_topics}}{% if r.kids %}&kids{% endif %}">edit</a>)</li>
+  {% endfor %}
+</ul>
+{% endfor %}
+
+{% endif %}
+{% endif %}
     <form action="/edit" method="post">
       Passage: <br/>
-      <input type="text" name="passage" value="">
+      <input type="text" name="passage" value="{{passage}}">
       <br/>
-      <input type="checkbox" name="kids">Kid-friendly
+      <input type="checkbox" name="kids"{% if kids %}checked{% endif %}>Kid-friendly
       <br/>
       Topics:<br/>
-      <input type="text" name="topics" value="">
+      <input type="text" name="topics" value="{{topics}}">
       <br/>
       <input type="submit" value="Submit">
     </form>
-  </main>
-</body>
-</html>
+{% endblock %}
