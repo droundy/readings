@@ -19,7 +19,7 @@
 
     <ul>
     {% for r in book.readings %}
-    <li><a href="{{r.link}}">{{r.name}}</a></li>
+    <li><a href="{{r.link}}">{{r.name}}</a> (<a href="/edit?">edit</a>)</li>
     {% endfor %}
     </ul>
 
