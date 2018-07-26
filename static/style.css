@@ -70,35 +70,35 @@ article {
     color: red;
 }
 
-@media only screen and (min-width: 24em) {
+@media only screen and (min-width: 40em) {
     ul {
         columns: 2;
         -webkit-columns: 2;
         -moz-columns: 2;
     }
 }
-@media only screen and (min-width: 36em) {
+@media only screen and (min-width: 60em) {
     ul {
         columns: 3;
         -webkit-columns: 3;
         -moz-columns: 3;
     }
 }
-@media only screen and (min-width: 48em) {
+@media only screen and (min-width: 80em) {
     ul {
         columns: 4;
         -webkit-columns: 4;
         -moz-columns: 4;
     }
 }
-@media only screen and (min-width: 60em) {
+@media only screen and (min-width: 100em) {
     ul {
         columns: 5;
         -webkit-columns: 5;
         -moz-columns: 5;
     }
 }
-@media only screen and (min-width: 72em) {
+@media only screen and (min-width: 120em) {
     ul {
         columns: 6;
         -webkit-columns: 6;
