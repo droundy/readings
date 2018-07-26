@@ -1,7 +1,8 @@
 from pysword.bible import SwordBible
 import pickle, scriptures, random, datetime, copy, inspect, os
 
-bible = SwordBible(os.path.dirname(inspect.getfile(inspect.currentframe()))+'/kjv',
+readingspath = os.path.dirname(inspect.getfile(inspect.currentframe()))
+bible = SwordBible(readingspath+'/kjv',
                    'ztext', 'kjv', 'utf8', 'OSIS')
 
 structure = bible.get_structure()
@@ -135,8 +136,10 @@ def book_block(b, cat):
         readings.append(Reading(b.name, c+1, 1, c+1, cl[c]))
     return Block(b.name, readings, cat)
 
-with open("readings", "rb") as f:
+with open(readingspath+"/readings", "rb") as f:
     blocks = pickle.load(f)
+with open(readingspath+"/schedule", "rb") as f:
+    schedule = pickle.load(f)
 
 def passage_length(book, chap1, verse1, chapN, verseN):
     totlen = -1
@@ -153,7 +156,7 @@ def passage_length(book, chap1, verse1, chapN, verseN):
         c += 1
     return totlen
 
-def schedule_day(blocks, schedule):
+def schedule_day():
     current_blocks = [b for b in blocks if b.where_am_i is not None]
 
     categories = ['NT', 'OT', 'Psalms']
@@ -267,15 +270,18 @@ def modify_readings(passages, topics, kids):
                 changes.books.append(b)
 
     now = datetime.date.today()
-    with open("schedule", "rb") as f:
-        schedule = pickle.load(f)
     daynum = int((now - schedule[0]).total_seconds()/24/60/60)
     if len(schedule[1]) > daynum+1:
         for b in blocks:
             b.where_am_i = None
         del schedule[1][daynum+1:]
-        with open("schedule", "wb") as f:
-            pickle.dump(schedule, f)
-    with open("readings", "wb") as f:
-        pickle.dump(blocks, f)
+        save_schedule()
+    save_blocks()
     return changes
+
+def save_schedule():
+    with open(readingspath+"/schedule", "wb") as f:
+            pickle.dump(schedule, f)
+def save_blocks():
+    with open(readingspath+"/readings", "wb") as f:
+            pickle.dump(blocks, f)
