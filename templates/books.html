@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Readings for {{date}}</title>
+  <title>Readings by book</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,14 +15,13 @@
     </ul>
   </nav>
   <main>
-    <h1>Readings for {{date}}</h1>
+    <h1>Readings by book</h1>
 
-    {% if yesterday is not none %}<a class="previous" href="day-{{yesterday}}">Previous</a>{% endif %}
-    <a class="next" href="day-{{tomorrow}}">Next</a>
-    <article>
-      <a href="{{niv_link}}">{{passage|safe}}</a>
-    </article>
-
+    <ul>
+    {% for book in books %}
+    <li><a href="book/{{book}}">{{book}}</a></li>
+    {% endfor %}
+    </ul>
   </main>
 </body>
 </html>

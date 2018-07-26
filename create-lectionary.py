@@ -33,8 +33,8 @@ for x in ot:
     if b.name == 'Psalms':
         print('\n', b, b.length)
         for y in b.readings:
-            n = str(y)
-            bb = lectionary.Block(n[:n.find(':')].replace('Psalms', 'Psalm'), [y], 'Psalms')
+            n = y.name.strip()
+            bb = lectionary.Block(n.replace('Psalms', 'Psalm'), [y], 'Psalms')
             blocks.add(bb)
             print(bb, len(bb.readings), bb.length)
             Psalms_total += y.length

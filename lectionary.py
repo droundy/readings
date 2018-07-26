@@ -48,6 +48,11 @@ class Reading:
                                            self.chapN, self.verseN)
         n = n.replace(' of Jesus Christ','')
         return n
+    @property
+    def link(self):
+        niv_link = 'https://www.biblegateway.com/passage/?search='
+        niv_link += self.linkname+'&version=NIV'
+        return niv_link
     def __eq__(self, r):
         return (self.book == r.book
                 and self.chap1 == r.chap1 and self.chapN == r.chapN
@@ -117,6 +122,8 @@ class Block:
         return '{}'.format(self.name)
     def __repr__(self):
         return '{}'.format(self.name)
+    def __lt__(self, b):
+        return self.name < b.name
 
 def book_block(b, cat):
     readings = []

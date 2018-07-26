@@ -75,5 +75,22 @@ def submit_edit():
                                  changes=changes,
                                  feedback=feedback)
 
+@app.route("/books", methods=['GET'])
+def books():
+    with open("readings", "rb") as f:
+        blocks = pickle.load(f)
+    blocks = sorted(list(blocks))
+    return flask.render_template('books.html', books=blocks)
+
+@app.route("/book/<string:book>", methods=['GET'])
+def book(book):
+    with open("readings", "rb") as f:
+        blocks = pickle.load(f)
+    for b in blocks:
+        if b.name == book:
+            book = b
+    return flask.render_template('book.html', book=book)
+
+
 if __name__ == "__main__":
     app.run(extra_files=glob.glob('templates/*.html'))
