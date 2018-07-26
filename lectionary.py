@@ -1,7 +1,7 @@
 from pysword.bible import SwordBible
-import pickle, scriptures, random, datetime, copy
+import pickle, scriptures, random, datetime, copy, inspect, os
 
-bible = SwordBible('kjv',
+bible = SwordBible(os.path.dirname(inspect.getfile(inspect.currentframe()))+'/kjv',
                    'ztext', 'kjv', 'utf8', 'OSIS')
 
 structure = bible.get_structure()
