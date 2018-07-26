@@ -9,9 +9,9 @@
 <body>
   <nav>
     <ul>
-      <li><a href="/">Today's reading</a></li>
-      <li><a href="/books">Readings by book</a></li>
-      <li><a href="/edit">Edit readings</a></li>
+      <li><a href="/">Today</a></li>
+      <li><a href="/books">Books</a></li>
+      <li><a href="/edit">Edit</a></li>
     </ul>
   </nav>
   <main>
@@ -20,7 +20,9 @@
     {% if yesterday is not none %}<a class="previous" href="day-{{yesterday}}">Previous</a>{% endif %}
     <a class="next" href="day-{{tomorrow}}">Next</a>
     <article>
-      <a href="{{niv_link}}">{{passage|safe}}</a>
+      {% for r in readings %}
+      <a class="reading" href="{{niv_link}}">{{r.linkname}}</a>
+      {% endfor %}
     </article>
 {% endblock %}
   </main>

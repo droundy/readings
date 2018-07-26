@@ -33,14 +33,14 @@ def day(daynum):
     # The following is the oremus bible version: no adds!
     link = 'http://bible.oremus.org/?version=NRSV&vnum=NO&passages='
     link += '%0D%0A'.join([r.linkname for r in today])
-    passage = '<br/>'.join(sorted([r.name for r in today]))
+    readings = sorted(today)
 
     return flask.render_template('index.html',
                                  date=date,
                                  link=link,
                                  niv_link=niv_link,
                                  today=today,
-                                 passage=passage,
+                                 readings=readings,
                                  yesterday=yesterday, tomorrow=tomorrow)
 
 @app.route("/edit", methods=['GET'])

@@ -17,15 +17,13 @@
 
 {% endif %}
 {% endif %}
-    <form action="/edit" method="post">
-      Passage: <br/>
-      <input type="text" name="passage" value="{{passage}}">
-      <br/>
-      <input type="checkbox" name="kids"{% if kids %}checked{% endif %}>Kid-friendly
-      <br/>
-      Topics:<br/>
-      <input type="text" name="topics" value="{{topics}}">
-      <br/>
-      <input type="submit" value="Submit">
-    </form>
+<form action="/edit" method="post">
+  <ul>
+    <li>Passage <input type="text" name="passage" value="{{passage}}" autofocus></li>
+    <li><input type="checkbox" name="kids"{% if kids %}checked{% endif %}>Kid-friendly:</li>
+    <li>Topics <input type="text" name="topics" value="{{topics}}"></li>
+    <li>
+  </ul>
+  <input type="submit" value="Submit"></li>
+</form>
 {% endblock %}
