@@ -10,7 +10,7 @@
 <ul>
   {% for r in b.readings %}
   <li>
-    <a href="{{r.link}}" class="{% if r in changes.passages %}changed{%elif r in changes.cut%}cut{%else%}same{%endif%}{% if r.kids %} kids{% endif %} reading">{{r.name}}</a>
+    <a href="{{r.link}}" class="{% if r in changes.passages %}changed{%elif r in changes.cut%}cut{%else%}same{%endif%}{% if r.kids %} kids{% endif %} reading">{{r.linkname}}</a>
     <a class="edit" href="/edit?passage={{r.linkname}}&topics={{r.space_topics}}{% if r.kids %}&kids{% endif %}">{{ r.comma_topics }}</a>
   </li>
   {% endfor %}
