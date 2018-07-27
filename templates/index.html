@@ -21,7 +21,7 @@
     <a class="next" href="day-{{tomorrow}}">Next</a>
     <article>
       {% for r in readings %}
-      <a class="reading" href="{{niv_link}}">{{r.linkname}}</a>
+      <a class="{% if r.kids %}kids {% endif %}reading" href="{{niv_link}}">{{r.linkname}}</a>
       {% endfor %}
     </article>
 {% endblock %}
