@@ -29,6 +29,17 @@ class Reading:
         return self.name
     def __hash__(self):
         return hash(self.name)
+    def next(self):
+        for b in blocks:
+            if self in b.readings:
+                foundme = False
+                for r in b.readings:
+                    if foundme:
+                        return r
+                    if r == self:
+                        foundme = True
+                return None
+        return None
     @property
     def name(self):
         tags = ''
@@ -121,7 +132,6 @@ class Block:
         self.category = cat
         self.length = sum([r.length for r in readings])
         self.times_read = 0
-        self.where_am_i = None
     def __str__(self):
         return '{}'.format(self.name)
     def __repr__(self):
@@ -157,60 +167,73 @@ def passage_length(book, chap1, verse1, chapN, verseN):
     return totlen
 
 def schedule_day():
-    current_blocks = [b for b in blocks if b.where_am_i is not None]
+    current_readings = {}
+    priority = {}
 
     categories = ['NT', 'OT', 'Psalms']
+    for c in categories:
+        current_readings[c] = []
+        priority[c] = 0
     years = [1,2,1.5]
-    goals = []
-    have_read = []
-    priority = []
 
     num_days = len(schedule[1])
 
     for i in range(len(categories)):
-        total = sum([b.length for b in blocks if b.category == categories[i]])
-        goals.append(total/365.0/years[i])
-        print(categories[i], 'daily goal', goals[i])
-        have_read.append(sum([r.length for day in schedule[1] for r in day if r.category == categories[i]]))
-        print('    in', num_days, 'days have read', have_read[i])
-        priority.append((num_days+1)*goals[i] - have_read[i])
-        print('    priority', priority[i])
+        c = categories[i]
+        total = sum([b.length for b in blocks if b.category == c])
+        goal = total/365.0/years[i]
+        print(c, 'daily goal', goal)
+        have_read = sum([r.length for day in schedule[1] for r in day if r.category == c])
+        print('    in', num_days, 'days have read', have_read)
+        priority[c] = (num_days+1)*goal - have_read
+        print('    priority', priority[c])
+        for d in reversed(schedule[1]):
+            for r in reversed(d):
+                if r.category == c:
+                    current_readings[c].append(r)
+                    break
+            if len(current_readings[c]) > 0:
+                break
 
-    print('currently reading', current_blocks)
+    print('most recently read', current_readings)
+    next_readings = {}
+    for c in categories:
+        next_readings[c] = []
+    for c in categories:
+        for r in current_readings[c]:
+            n = r.next()
+            if n is not None:
+                next_readings[c].append(n)
+                priority[c] -= n.length
+            else:
+                for b in blocks:
+                    if r in b.readings:
+                        b.times_read += 1
 
-    today = []
     for x in range(2*len(categories)):
-        most_needed = max(priority)
-        if most_needed < 0:
+        c = max(priority, key=priority.get)
+        if priority[c] < 0:
             break
-        for i in range(len(categories)):
-            c = categories[i]
-            if priority[i] == most_needed:
-                print('need', c, 'most')
-                now = [b for b in current_blocks if b.category == c]
-                if len(now) == 0:
-                    print('picking new', c, 'block')
-                    least_read = min([b.times_read for b in blocks if b.category == c])
-                    options = [b for b in blocks if b.category == c and b.times_read == least_read]
-                    b = random.choice(options)
-                    b.where_am_i = 0
-                else:
-                    b = now[0]
-                length = 0
-                while length < most_needed:
-                    r = b.readings[b.where_am_i]
-                    print('adding', r)
-                    b.where_am_i += 1
-                    length += r.length
-                    priority[i] -= r.length
-                    today.append(r)
-                    if b.where_am_i >= len(b.readings): # we have finished this block
-                        b.where_am_i = None
-                        try:
-                            current_blocks.remove(b)
-                        except:
-                            pass
-                        break
+        print('need', c, 'most')
+        if len(next_readings[c]) == 0 or next_readings[c][-1].next() is None:
+            if len(next_readings[c]) > 0:
+                for b in blocks:
+                    if next_readings[c][-1] in b.readings:
+                        b.times_read += 1
+            print('picking new', c, 'block')
+            least_read = min([b.times_read for b in blocks if b.category == c])
+            options = [b for b in blocks if b.category == c and b.times_read == least_read]
+            b = random.choice(options)
+            n = b.readings[0]
+        else:
+            n = next_readings[c][-1].next()
+        next_readings[c].append(n)
+        priority[c] -= n.length
+    today = []
+    for c in categories:
+        today.extend(next_readings[c])
+    print('>>>> current is', current_readings.values())
+    print('>>>> today is', today)
     schedule[1].append(today)
 
 def coalesce_readings(rs):
@@ -272,8 +295,6 @@ def modify_readings(passages, topics, kids):
     now = datetime.date.today()
     daynum = int((now - schedule[0]).total_seconds()/24/60/60)
     if len(schedule[1]) > daynum+1:
-        for b in blocks:
-            b.where_am_i = None
         del schedule[1][daynum+1:]
         save_schedule()
     save_blocks()
