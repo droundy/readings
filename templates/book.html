@@ -3,7 +3,10 @@
 {% block content %}
     <ul>
     {% for r in book.readings %}
-    <li><a class="{% if r.kids %}kids {% endif %}reading" href="{{r.link}}">{{r.name}}</a> (<a href="/edit?passage={{r.linkname}}&topics={{r.space_topics}}{% if r.kids %}&kids{% endif %}">edit</a>)</li>
+    <li>
+      <a class="{% if r.kids %}kids {% endif %}reading" href="{{r.link}}">{{r.linkname}}</a>
+      <a class="edit" href="/edit?passage={{r.linkname}}&topics={{r.space_topics}}{% if r.kids %}&kids{% endif %}">{{ r.comma_topics }}</a>
+    </li>
     {% endfor %}
     </ul>
 {% endblock %}

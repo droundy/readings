@@ -65,6 +65,11 @@ class Reading:
     def space_topics(self):
         return ' '.join(self.topics)
     @property
+    def comma_topics(self):
+        if len(self.topics) == 0:
+            return ''
+        return ' ({})'.format(', '.join(self.topics))
+    @property
     def link(self):
         niv_link = 'https://www.biblegateway.com/passage/?search='
         niv_link += self.linkname+'&version=NIV'
