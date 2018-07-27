@@ -63,7 +63,7 @@ def submit_edit():
                                                  form['topics'].split(),
                                                  'kids' in form)
         except:
-            changes = Changes('Error modifying readings: {}'.format(sys.exc_info()))
+            changes = lectionary.Changes('Error modifying readings: {}'.format(sys.exc_info()))
 
     return flask.render_template('edit.html',
                                  changes=changes)
