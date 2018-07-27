@@ -23,6 +23,7 @@ class Reading:
         self.topics = copy.copy(topics)
         self.kids = kids
         self.category = ''
+        self.times_read = 0
     def __str__(self):
         return '{} ({})'.format(self.name, self.length)
     def __repr__(self):
@@ -148,6 +149,15 @@ def book_block(b, cat):
 
 with open(readingspath+"/readings", "rb") as f:
     blocks = pickle.load(f)
+    # The following is a workaround for old readings that did not get
+    # constructed with times_read initialized.  Also for changes that
+    # did not preserve the category of readings.
+    for b in blocks:
+        for r in b.readings:
+            r.category = b.category
+            if 'times_read' not in dir(r):
+                r.times_read = 0
+
 with open(readingspath+"/schedule", "rb") as f:
     schedule = pickle.load(f)
 
@@ -166,11 +176,23 @@ def passage_length(book, chap1, verse1, chapN, verseN):
         c += 1
     return totlen
 
+def get_all_readings():
+    rs = []
+    for b in blocks:
+        rs.extend(b.readings)
+    return rs
+
+def get_all_kids():
+    kids = [r for r in get_all_readings() if r.kids]
+    least_times = min([r.times_read for r in kids])
+    return list([r for r in kids if r.times_read == least_times])
+
 def schedule_day():
     current_readings = {}
     priority = {}
 
     categories = ['NT', 'OT', 'Psalms']
+    extra_kids = []
     for c in categories:
         current_readings[c] = []
         priority[c] = 0
@@ -197,6 +219,7 @@ def schedule_day():
 
     print('most recently read', current_readings)
     next_readings = {}
+    have_kids = False
     for c in categories:
         next_readings[c] = []
     for c in categories:
@@ -204,7 +227,9 @@ def schedule_day():
             n = r.next()
             if n is not None:
                 next_readings[c].append(n)
+                have_kids = have_kids or n.kids
                 priority[c] -= n.length
+                n.times_read += 1
             else:
                 for b in blocks:
                     if r in b.readings:
@@ -227,13 +252,27 @@ def schedule_day():
             n = b.readings[0]
         else:
             n = next_readings[c][-1].next()
+        if n.length > priority[c]:
+            break
         next_readings[c].append(n)
+        n.times_read += 1
         priority[c] -= n.length
+
+    if not have_kids:
+        all_kids = get_all_kids()
+        n = random.choice(all_kids)
+        n.times_read += 1
+        extra_kids.append(n)
+        print('new kid reading', n.name)
+        priority[n.category] -= n.length
+
     today = []
+    today.extend(extra_kids)
     for c in categories:
         today.extend(next_readings[c])
     print('>>>> current is', current_readings.values())
     print('>>>> today is', today)
+    print('>>>> have_kids is', have_kids, extra_kids)
     schedule[1].append(today)
 
 def coalesce_readings(rs):
