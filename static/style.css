@@ -79,7 +79,7 @@ a.reading {
     margin: .5em;
 }
 
-.previous {
+.previous, .previous:active, .previous:link {
     float: left;
     color: var(--nav-color);
 }
