@@ -119,6 +119,11 @@ class Reading:
                                                                end_chapter=self.chapN,
                                                                end_verse=self.verseN)
             chunks.append(Reading(b, c1, v1, cN, vN))
+        for rr in chunks:
+            if r.kids:
+                rr.kids = true
+            rr.topics = copy.copy(r.topics)
+            rr.category = rr.category
         return chunks
 
 class Block:
