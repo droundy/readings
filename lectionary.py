@@ -218,10 +218,12 @@ def schedule_day():
         have_read = sum([r.length for day in schedule[1] for r in day if r.category == c])
         print('    in', num_days, 'days have read', have_read)
         priority[c] = (num_days+1)*goal - have_read
+        if c == 'NT':
+            print('           ', (num_days+1)*goal, '-', have_read)
         print('    priority', priority[c])
         for d in reversed(schedule[1]):
             for r in reversed(d):
-                if r.category == c:
+                if r.category == c and 'just_for_kids' not in dir(r):
                     current_readings[c].append(r)
                     break
             if len(current_readings[c]) > 0:
@@ -272,9 +274,12 @@ def schedule_day():
         all_kids = get_all_kids()
         n = random.choice(all_kids)
         n.times_read += 1
+        n = copy.copy(n)
+        n.just_for_kids = True
         extra_kids.append(n)
         print('new kid reading', n.name)
-        priority[n.category] -= n.length
+        # if priority[n.category] > 0:
+        #     priority[n.category] -= n.length
 
     today = []
     today.extend(extra_kids)
