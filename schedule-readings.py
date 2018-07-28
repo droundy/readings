@@ -16,3 +16,4 @@ for d in range(len(lectionary.schedule[1])):
         print('   ',r)
 
 lectionary.save_schedule()
+lectionary.save_blocks()

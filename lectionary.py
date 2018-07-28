@@ -193,6 +193,12 @@ def get_all_kids():
     least_times = min([r.times_read for r in kids])
     return list([r for r in kids if r.times_read == least_times])
 
+def match_goodness(r, rs):
+    otopics = set()
+    for rr in rs:
+        otopics = otopics.union(rr.topics)
+    return len(r.topics.intersection(otopics)) - 2.0*r.times_read
+
 def schedule_day():
     current_readings = {}
     priority = {}
@@ -288,7 +294,14 @@ def schedule_day():
             total_goal -= n.length
 
     if not have_kids:
+        today = []
+        for c in categories:
+            today.extend(next_readings[c])
         all_kids = get_all_kids()
+        best = max([match_goodness(r, today) for r in all_kids])
+        print('.... best match is', best)
+        all_kids = [r for r in all_kids if match_goodness(r, today) == best]
+        print('.... there are', len(all_kids), 'best kids')
         n = random.choice(all_kids)
         n.times_read += 1
         n = copy.copy(n)
