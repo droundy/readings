@@ -32,14 +32,10 @@ class Reading:
         return hash(self.name)
     def next(self):
         for b in blocks:
-            if self in b.readings:
-                foundme = False
-                for r in b.readings:
-                    if foundme:
-                        return r
-                    if r == self:
-                        foundme = True
-                return None
+            if self.book == b.readings[0].book and b.readings[0] <= self:
+                after = [r for r in b.readings if r > self]
+                if len(after) > 0:
+                    return after[0]
         return None
     @property
     def name(self):
@@ -209,25 +205,31 @@ def schedule_day():
     years = [1,2,1.5]
 
     num_days = len(schedule[1])
+    total_goal = 0 # this will be the total bytes we want to read per day
 
     for i in range(len(categories)):
         c = categories[i]
         total = sum([b.length for b in blocks if b.category == c])
         goal = total/365.0/years[i]
         print(c, 'daily goal', goal)
-        have_read = sum([r.length for day in schedule[1] for r in day if r.category == c])
+        have_read = sum([r.length for day in schedule[1]
+                         for r in day if r.category == c and not r.kids])
+        have_read_kids = sum([r.length/2 for day in schedule[1]
+                              for r in day if r.category == c and r.kids])
         print('    in', num_days, 'days have read', have_read)
-        priority[c] = (num_days+1)*goal - have_read
+        priority[c] = (num_days+1)*goal - have_read - have_read_kids
+        total_goal += (num_days+1)*goal - have_read - have_read_kids
         if c == 'NT':
             print('           ', (num_days+1)*goal, '-', have_read)
         print('    priority', priority[c])
         for d in reversed(schedule[1]):
             for r in reversed(d):
-                if r.category == c and 'just_for_kids' not in dir(r):
+                if r.category == c and ('just_for_kids' not in dir(r) or not r.just_for_kids):
                     current_readings[c].append(r)
                     break
             if len(current_readings[c]) > 0:
                 break
+    print('++++ total goal is', total_goal)
 
     print('most recently read', current_readings)
     next_readings = {}
@@ -240,7 +242,12 @@ def schedule_day():
             if n is not None:
                 next_readings[c].append(n)
                 have_kids = have_kids or n.kids
-                priority[c] -= n.length
+                if n.kids:
+                    priority[c] -= n.length/2
+                    total_goal -= n.length/2
+                else:
+                    priority[c] -= n.length
+                    total_goal -= n.length
                 n.times_read += 1
             else:
                 for b in blocks:
@@ -249,14 +256,20 @@ def schedule_day():
 
     for x in range(2*len(categories)):
         c = max(priority, key=priority.get)
-        if priority[c] < 0:
+        if priority[c] < 0 or total_goal < 0:
+            print('**** all done with total_goal', total_goal)
             break
         print('need', c, 'most')
-        if len(next_readings[c]) == 0 or next_readings[c][-1].next() is None:
-            if len(next_readings[c]) > 0:
-                for b in blocks:
-                    if next_readings[c][-1] in b.readings:
-                        b.times_read += 1
+        if len(next_readings[c]) > 0 and next_readings[c][-1].next() is None:
+            # We finished a book in this category today, let us not
+            # start another until tomorrow.
+            for b in blocks:
+                if next_readings[c][-1] in b.readings:
+                    b.times_read += 1
+            priority[c] = -1
+            print('just finished book in', c)
+            continue
+        if len(next_readings[c]) == 0:
             print('picking new', c, 'block')
             least_read = min([b.times_read for b in blocks if b.category == c])
             options = [b for b in blocks if b.category == c and b.times_read == least_read]
@@ -264,11 +277,15 @@ def schedule_day():
             n = b.readings[0]
         else:
             n = next_readings[c][-1].next()
-        if n.length > priority[c]:
-            break
         next_readings[c].append(n)
         n.times_read += 1
-        priority[c] -= n.length
+        if n.kids:
+            have_kids = True
+            priority[c] -= n.length/2
+            total_goal -= n.length/2
+        else:
+            priority[c] -= n.length
+            total_goal -= n.length
 
     if not have_kids:
         all_kids = get_all_kids()
@@ -278,8 +295,9 @@ def schedule_day():
         n.just_for_kids = True
         extra_kids.append(n)
         print('new kid reading', n.name)
-        # if priority[n.category] > 0:
-        #     priority[n.category] -= n.length
+        if priority[n.category] > 0:
+            priority[n.category] -= n.length/2
+            total_goal -= n.length/2
 
     today = []
     today.extend(extra_kids)
@@ -303,6 +321,7 @@ def coalesce_readings(rs):
                 rs[i] = joined
                 del rs[i+1]
             else:
+                print('trying to join', rs[i],'with', rs[i+1])
                 print('difference in length is', joined.length, 'versus', rs[i].length + rs[i+1].length)
                 i=i+1
         else:
