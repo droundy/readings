@@ -260,6 +260,25 @@ def schedule_day():
                     if r in b.readings:
                         b.times_read += 1
 
+    if not have_kids:
+        today = []
+        for c in categories:
+            today.extend(next_readings[c])
+        all_kids = get_all_kids()
+        best = max([match_goodness(r, today) for r in all_kids])
+        print('.... best match is', best)
+        all_kids = [r for r in all_kids if match_goodness(r, today) == best]
+        print('.... there are', len(all_kids), 'best kids')
+        n = random.choice(all_kids)
+        n.times_read += 1
+        n = copy.copy(n)
+        n.just_for_kids = True
+        extra_kids.append(n)
+        print('new kid reading', n.name)
+        if priority[n.category] > 0:
+            priority[n.category] -= n.length/2
+            total_goal -= n.length/2
+
     for x in range(2*len(categories)):
         c = max(priority, key=priority.get)
         if priority[c] < 0 or total_goal < 0:
@@ -292,25 +311,6 @@ def schedule_day():
         else:
             priority[c] -= n.length
             total_goal -= n.length
-
-    if not have_kids:
-        today = []
-        for c in categories:
-            today.extend(next_readings[c])
-        all_kids = get_all_kids()
-        best = max([match_goodness(r, today) for r in all_kids])
-        print('.... best match is', best)
-        all_kids = [r for r in all_kids if match_goodness(r, today) == best]
-        print('.... there are', len(all_kids), 'best kids')
-        n = random.choice(all_kids)
-        n.times_read += 1
-        n = copy.copy(n)
-        n.just_for_kids = True
-        extra_kids.append(n)
-        print('new kid reading', n.name)
-        if priority[n.category] > 0:
-            priority[n.category] -= n.length/2
-            total_goal -= n.length/2
 
     today = []
     today.extend(extra_kids)
