@@ -208,7 +208,7 @@ def schedule_day():
     for c in categories:
         current_readings[c] = []
         priority[c] = 0
-    years = [1,2,1.5]
+    years = [3,5,3]
 
     num_days = len(schedule[1])
     total_goal = 0 # this will be the total bytes we want to read per day
